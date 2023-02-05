@@ -4,7 +4,7 @@ app.use(express.static('public'))
 
 const http = require('http').Server(app)
 const serverSocket = require('socket.io')(http)
-const port = 8000
+const port = process.env.PORT || 8080
 
 http.listen(port,()=>{
 

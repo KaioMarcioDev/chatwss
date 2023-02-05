@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat WebSocket 1.0</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <header>
+        <form>
+            <input type="text" name="" id="msg" autofocus autocomplete="off" placeholder="Digite uma mensagen a enviar">
+            <button type="submit">Enviar</button>
+        </form>
+    </header>
+    <ul id="mensagens"></ul>
+    <div id="status"></div>
+    <script>
+        $(function(){
+            const socket = io()
+            socket.nickname = ''
+
+            $('form').submit(function(evt){
+
+                if(socket.nickname === ''){
+                    socket.nickname = $('#msg').val()
+                    socket.emit('login', socket.nickname)   
+                    $('#msg').keypress((evt)=>{
+                        socket.emit('status', `${socket.nickname} esta digitando...`)
+                          })
+                    $('#msg').keyup((evt)=>{
+                        socket.emit('status', '')
+                          })
+                }else{
+                    socket.emit('chat-msg', $('#msg').val())
+                }
+               
+                $('#msg').val('')
+                return false
+            })
+            socket.on('chat-msg',(msg)=>{
+                $('#status').html(msg)
+            })
+
+            
+
+
+            socket.on('status',(msg)=>{
+                $('#mensagens').append($('<li>').text(msg))
+            })
+
+
+        })
+    </script>
+</body>
+</html>
